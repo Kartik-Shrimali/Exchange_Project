@@ -9,10 +9,10 @@ export default function Trade() {
     const params = useParams();
     return (
         <div>
-            <MarketBar market = {params.market}/>
-            <TradeView market = {params.market}/>
-            <SwapUI market = {params.market}/>
-            <Depth market = {params.market}/>
+            <MarketBar market = {params.market as string}/>
+            <TradeView market = {params.market as string}/>
+            <SwapUI market = {params.market as string}/>
+            <Depth market = {params.market as string}/>
         </div>
     );
 }

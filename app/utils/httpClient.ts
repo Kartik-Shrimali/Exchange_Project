@@ -1,7 +1,7 @@
 import axios from "axios"
 import {Depth , Ticker , Trade , KLine} from "./types"
 
-const BASE_URL = "https://api.backpack.exchange/api/v1";
+const BASE_URL = "http://localhost:3001/api/v1";
 
 export async function getDepth(market : string) : Promise<Depth>{
     const response = await axios.get(`${BASE_URL}/depth?symbol=${market}`);
