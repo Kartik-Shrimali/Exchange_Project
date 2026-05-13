@@ -28,7 +28,7 @@ export async function getTicker(market : string) : Promise<Ticker>{
 }
 
 export async function getKlines(market : string , interval : string, startTime : number , endTime : number) : Promise<KLine[]>{
-    const response = await axios.get(`${BASE_URL}/klines?symbol=${market}&interval=${interval}&startTIme=${startTime}&endTime=${endTime}`);
+    const response = await axios.get(`${BASE_URL}/klines?symbol=${market}&interval=${interval}&startTime=${startTime}&endTime=${endTime}`);
 
     const data : KLine[] = response.data;
 
