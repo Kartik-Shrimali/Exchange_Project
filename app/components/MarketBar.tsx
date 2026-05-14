@@ -8,8 +8,12 @@ export default function MarketBar({ market }: { market: string }) {
 
     useEffect(() => {
         async function getValue() {
-            const response = await getTicker(market);
-            setTicker(response);
+            try{
+                const response = await getTicker(market);
+                setTicker(response);
+            }catch(e){
+                console.log("error in marketbar.tsx. Error: " , e);
+            }
         }
 
         getValue();
