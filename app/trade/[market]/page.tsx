@@ -8,11 +8,25 @@ import { useParams } from "next/navigation";
 export default function Trade() {
     const params = useParams();
     return (
-        <div>
-            <MarketBar market = {params.market as string}/>
-            <TradeView market = {params.market as string}/>
-            <SwapUI market = {params.market as string}/>
-            <Depth market = {params.market as string}/>
+        <div className="flex flex-row flex-1">
+        <div className="flex flex-col flex-1">
+            <MarketBar market={params.market as string} />
+            <div className="flex flex-row h-[620px] border-y border-slate-800">
+                <div className="flex flex-col flex-1">
+                    <TradeView market={params.market as string} />
+                </div>
+                <div className="w-[1px] flex-col border-slate-800 border-l"></div>
+                <div className="flex flex-col w-[250px] overflow-hidden">
+                    <Depth market={params.market as string} /> 
+                </div>
+            </div>
         </div>
+        <div className="w-[1px] flex-col border-slate-800 border-l"></div>
+        <div>
+            <div className="flex flex-col w-[250px]">
+                <SwapUI market={params.market as string} />
+            </div>
+        </div>
+    </div>
     );
 }
