@@ -68,7 +68,13 @@ export class Engine {
                         otherUserBalance[quoteAsset].available += fill.quantity * fill.price
                     }else{
                         quoteBalance.available += fill.quantity * fill.price
-                        userBalance[baseAsset] -= fill.quantity
+                        userBalance[baseAsset].locked -= fill.quantity
+
+                        const otherUserBalance = this.userBalances.get(fill.otherUserId);
+                        if(!otherUserBalance) throw new Error("Other User not found");
+
+                        otherUserBalance[baseAsset].available += fill.quantity
+                        otherUserBalance[quoteAsset].locked -= fill.quantity * fill.price
                     }
                 })
 
