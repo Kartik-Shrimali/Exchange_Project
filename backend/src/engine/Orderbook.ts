@@ -17,6 +17,10 @@ export class Orderbook {
         this.quoteAsset = quoteAsset;
     }
 
+    ticker(){
+        return `${this.baseAsset}_${this.quoteAsset}`
+    }
+
     addOrder(order: orderType): { executedQty: number, fills: fillType[] } {
         let remainingQty = 0;
         let executedQty: number = 0;
@@ -61,7 +65,8 @@ export class Orderbook {
                     tradeId: this.lastTradeId++,
                     price: ask.price,
                     quantity: matchQty,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    otherUserId : ask.userId
                 }
 
                 ask.remaining = ask.remaining - matchQty;
@@ -101,7 +106,8 @@ export class Orderbook {
                     tradeId : this.lastTradeId++,
                     price : bid.price,
                     quantity : matchQty,
-                    timestamp : Date.now()
+                    timestamp : Date.now(),
+                    otherUserId : bid.userId
                 }
 
                 sellOrder.remaining -= matchQty;

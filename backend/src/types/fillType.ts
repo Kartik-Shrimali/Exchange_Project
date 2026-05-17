@@ -3,5 +3,6 @@ export interface fillType{
     tradeId : number
     timestamp : number
     quantity : number,
-    price : number
+    price : number,
+    otherUserId : string
 }
