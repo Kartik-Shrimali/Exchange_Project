@@ -89,9 +89,37 @@ export class Orderbook {
         }
     }
 
-    matchAsk(order: orderType): { executedQty: number, fills: fillType[] } {
+    matchAsk(sellOrder: orderType): { executedQty: number, fills: fillType[] } {
         let executedQty: number = 0;
         let fills: fillType[] = [];
+
+        for(const bid of this.bids){
+            if(sellOrder.price <= bid.price){
+                const matchQty = Math.min(sellOrder.remaining , bid.remaining);
+
+                const fill : fillType = {
+                    fillId: Math.random().toString(36).substring(2, 15),
+                    tradeId : this.lastTradeId++,
+                    price : bid.price,
+                    quantity : matchQty,
+                    timestamp : Date.now()
+                }
+
+                sellOrder.remaining -= matchQty;
+                bid.remaining -= matchQty;
+                executedQty += matchQty;
+
+                fills.push(fill);
+
+                if(bid.remaining == 0){
+                    this.bids = this.bids.filter(a => a.remaining > 0);
+                }
+                if(sellOrder.remaining == 0){
+                    break; //kyuki order complete ho chuka hai 
+                }
+            }
+        }
+
         return {
             executedQty,
             fills,
