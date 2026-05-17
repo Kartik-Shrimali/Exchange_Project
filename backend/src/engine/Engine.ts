@@ -16,7 +16,7 @@ export class Engine {
     process(message: MessagefromApi) {
         switch (message.type) {
 
-            case CREATE_ORDER:
+            case CREATE_ORDER: {
                 const orderbook = this.orderbooks.find(o => o.ticker() === message.data.market)
                 if (!orderbook) throw new Error("Orderbook not found for market : " + message.data.market);
 
@@ -66,12 +66,12 @@ export class Engine {
 
                         otherUserBalance[baseAsset].locked -= fill.quantity
                         otherUserBalance[quoteAsset].available += fill.quantity * fill.price
-                    }else{
+                    } else {
                         quoteBalance.available += fill.quantity * fill.price
                         userBalance[baseAsset].locked -= fill.quantity
 
                         const otherUserBalance = this.userBalances.get(fill.otherUserId);
-                        if(!otherUserBalance) throw new Error("Other User not found");
+                        if (!otherUserBalance) throw new Error("Other User not found");
 
                         otherUserBalance[baseAsset].available += fill.quantity
                         otherUserBalance[quoteAsset].locked -= fill.quantity * fill.price
@@ -79,10 +79,12 @@ export class Engine {
                 })
 
                 break;
-            case CANCEL_ORDER:
+            }
+            case CANCEL_ORDER: {
+                const orderbook = this.orderbooks.find(o => o.ticker() === message.data.market)
                 break;
-
-            case ON_RAMP:
+            }
+            case ON_RAMP: {
                 const balance = this.userBalances.get(message.data.userId);
                 if (balance) {
                     balance[BASE_CURRENCY].available += message.data.amount
@@ -95,10 +97,19 @@ export class Engine {
                     })
                 }
                 break;
-            case GET_DEPTH:
-                break;
-            case GET_OPEN_ORDERS:
-                break;
+            }
+
+            case GET_DEPTH: {
+                const orderbook = this.orderbooks.find(o => o.ticker() === message.data.market)
+                if(!orderbook) throw new Error("Orderbook not found for market" + message.data.market);
+                return orderbook.getDepth();
+            }
+
+            case GET_OPEN_ORDERS: {
+                const orderbook = this.orderbooks.find(o => o.ticker() === message.data.market)
+                if(!orderbook) throw new Error("Orderbook not found for market" + message.data.market)
+                return orderbook.getOpenOrders(message.data.userId);
+            }
         }
     }
 }

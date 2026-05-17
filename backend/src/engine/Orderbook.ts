@@ -53,6 +53,26 @@ export class Orderbook {
         }
     }
 
+    cancelOrder(order : orderType) {
+        //checking if order exists in bids or asks
+        const bid = this.bids.find(x => x.orderId === order.orderId)
+        const ask = this.asks.find(x => x.orderId === order.orderId)
+        
+        //removing from bids/asks using filter
+        if(bid){
+            this.bids = this.bids.filter(x => x.orderId != bid.orderId)
+            return {bid}
+        }
+
+        if(ask){
+            this.asks = this.asks.filter(x => x.orderId != ask.orderId)
+            return {ask}
+        }
+
+        throw new Error("Order not found")
+
+    }
+
     matchBid(buyOrder: orderType): { executedQty: number, fills: fillType[] } {
         let executedQty: number = 0;
         let fills: fillType[] = [];
@@ -158,5 +178,12 @@ export class Orderbook {
             bids: bidArray,
             asks: askArray
         }
+    }
+
+    getOpenOrders(userId : string) : {openBids : orderType[] , openAsks : orderType[]}{
+        const openBids  = this.bids.filter(o => o.userId === userId)
+        const openAsks  = this.asks.filter(o => o.userId === userId)
+
+        return {openBids , openAsks}
     }
 }
