@@ -1,0 +1,9 @@
+import express from "express"
+
+const tradeRouter = express.Router();
+
+tradeRouter.get("/" , (req , res) =>{
+    
+})
+
+export {tradeRouter}
