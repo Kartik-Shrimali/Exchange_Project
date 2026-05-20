@@ -82,6 +82,26 @@ export class Engine {
             }
             case CANCEL_ORDER: {
                 const orderbook = this.orderbooks.find(o => o.ticker() === message.data.market)
+                if(!orderbook) throw new Error("Could not find the order of market: " + message.data.market);
+
+                const [baseAsset , quoteAsset] = message.data.market.split("_");
+
+                const userBalance = this.userBalances.get(message.data.userId);
+                if(!userBalance) throw new Error("Could not find the user");
+                
+                const quoteBalance = userBalance[quoteAsset];
+                const baseBalance = userBalance[baseAsset];
+
+                const order = orderbook.cancelOrder(message.data.orderId);
+
+                if(order.bid){
+                    quoteBalance.available += order.bid.price * order.bid.remaining
+                    quoteBalance.locked -= order.bid.price * order.bid.remaining
+                }else if(order.ask){
+                    baseBalance.available +=  order.ask.remaining
+                    baseBalance.locked -=  order.ask.remaining
+                }
+                
                 break;
             }
             case ON_RAMP: {

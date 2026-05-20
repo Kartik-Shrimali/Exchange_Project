@@ -53,10 +53,10 @@ export class Orderbook {
         }
     }
 
-    cancelOrder(order : orderType) {
+    cancelOrder(orderId : string) {
         //checking if order exists in bids or asks
-        const bid = this.bids.find(x => x.orderId === order.orderId)
-        const ask = this.asks.find(x => x.orderId === order.orderId)
+        const bid = this.bids.find(x => x.orderId === orderId)
+        const ask = this.asks.find(x => x.orderId === orderId)
         
         //removing from bids/asks using filter
         if(bid){
