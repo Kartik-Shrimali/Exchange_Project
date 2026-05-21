@@ -1,6 +1,7 @@
 import type { balanceType, orderType } from "../types";
 import { CANCEL_ORDER, CREATE_ORDER, GET_DEPTH, GET_OPEN_ORDERS, ON_RAMP, type MessagefromApi } from "../types/fromApi";
 import { Orderbook } from "./Orderbook"
+import { RedisManager } from "./RedisManager";
 
 export const BASE_CURRENCY = "INR";
 
@@ -13,7 +14,7 @@ export class Engine {
         this.userBalances = new Map();
     }
 
-    process(message: MessagefromApi) {
+    process(message: MessagefromApi , clientId : string) {
         switch (message.type) {
 
             case CREATE_ORDER: {
@@ -78,6 +79,11 @@ export class Engine {
                     }
                 })
 
+                RedisManager.getInstance().publishChannel(clientId , JSON.stringify({
+                    executedQty ,
+                    fills
+                }))
+
                 break;
             }
             case CANCEL_ORDER: {
@@ -102,6 +108,10 @@ export class Engine {
                     baseBalance.locked -=  order.ask.remaining
                 }
                 
+                RedisManager.getInstance().publishChannel(clientId , JSON.stringify({
+                    success: true
+                }))
+
                 break;
             }
             case ON_RAMP: {
@@ -116,19 +126,25 @@ export class Engine {
                         }
                     })
                 }
+                RedisManager.getInstance().publishChannel(clientId , JSON.stringify({success : true}))
                 break;
             }
 
             case GET_DEPTH: {
                 const orderbook = this.orderbooks.find(o => o.ticker() === message.data.market)
                 if(!orderbook) throw new Error("Orderbook not found for market" + message.data.market);
-                return orderbook.getDepth();
+                const depth = orderbook.getDepth();
+                RedisManager.getInstance().publishChannel(clientId , JSON.stringify(depth));
+                break;
             }
 
             case GET_OPEN_ORDERS: {
                 const orderbook = this.orderbooks.find(o => o.ticker() === message.data.market)
-                if(!orderbook) throw new Error("Orderbook not found for market" + message.data.market)
-                return orderbook.getOpenOrders(message.data.userId);
+                if(!orderbook) throw new Error("Orderbook not found for market" + message.data.market);
+                const data = message.data as {userId : string , market : string}
+                const openOrder =  orderbook.getOpenOrders(data.userId);
+                RedisManager.getInstance().publishChannel(clientId , JSON.stringify(openOrder));
+                break;
             }
         }
     }
