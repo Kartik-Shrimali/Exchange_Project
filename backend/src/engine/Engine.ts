@@ -84,6 +84,8 @@ export class Engine {
                     fills
                 }))
 
+                this.publishDepthUpdates(message.data.market);
+
                 break;
             }
             case CANCEL_ORDER: {
@@ -112,6 +114,7 @@ export class Engine {
                     success: true
                 }))
 
+                this.publishDepthUpdates(message.data.market);
                 break;
             }
             case ON_RAMP: {
@@ -147,5 +150,13 @@ export class Engine {
                 break;
             }
         }
+    }
+
+    private publishDepthUpdates(market : string){
+        const orderbook = this.orderbooks.find(o => o.ticker() === market);
+        if(!orderbook) throw new Error("Orderbook not found for market: " + market);
+
+        const depth = orderbook.getDepth();
+        RedisManager.getInstance().publishChannel(`depth@${market}` , JSON.stringify(depth));
     }
 }
