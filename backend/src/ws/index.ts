@@ -3,8 +3,8 @@ import { UserManager } from "./UserManager";
 import type { IncomingMessage } from "./types/in";
 import { SUBSCRIBE, UNSUBSCRIBE } from "./types/in";
 import { SubscriptionManager } from "./SubscriptionManager";
-
-const wss = new WebSocketServer({port : 3001});
+const PORT = 3002;
+const wss = new WebSocketServer({port : PORT});
 
 wss.on("connection" , (ws) =>{
     console.log("Client connected");
@@ -34,4 +34,4 @@ wss.on("connection" , (ws) =>{
     })
 })
 
-console.log("Websocket server running on port 3001")
+console.log(`Websocket server running on port ${PORT}`)

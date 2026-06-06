@@ -163,6 +163,9 @@ export class Engine {
         if (!orderbook) throw new Error("Orderbook not found for market: " + market);
 
         const depth = orderbook.getDepth();
-        RedisManager.getInstance().publishChannel(`depth@${market}`, JSON.stringify(depth));
+        RedisManager.getInstance().publishChannel(`depth@${market}`, JSON.stringify({
+            stream : `depth@${market}`,
+            data : depth
+        }));
     }
 }
