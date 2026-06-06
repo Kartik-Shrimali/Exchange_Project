@@ -1,11 +1,24 @@
 "use client";
+import axios from "axios";
 import { useState } from "react";
 
-export default function SwapUI({ market }: {market: string}) {
+export default function SwapUI({ market }: { market: string }) {
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
     const [activeTab, setActiveTab] = useState('buy');
     const [type, setType] = useState('limit');
+
+    async function placeOrder() {
+        const response = await axios.post("http://localhost:3001/api/v1/order", {
+            market: market,
+            price: Number(price),
+            quantity: Number(quantity),
+            side: activeTab,
+            userId: "user1"
+        })
+
+        console.log(`Order placed: `, response.data)
+    }
 
     return <div>
         <div className="flex flex-col">
@@ -17,7 +30,7 @@ export default function SwapUI({ market }: {market: string}) {
                 <div className="px-3">
                     <div className="flex flex-row flex-0 gap-5 undefined">
                         <LimitButton type={type} setType={setType} />
-                        <MarketButton type={type} setType={setType} />                       
+                        <MarketButton type={type} setType={setType} />
                     </div>
                 </div>
                 <div className="flex flex-col px-3">
@@ -33,7 +46,7 @@ export default function SwapUI({ market }: {market: string}) {
                                 Price
                             </p>
                             <div className="flex flex-col relative">
-                                <input step="0.01" placeholder="0" className="h-12 rounded-lg border-2 border-solid border-baseBorderLight bg-[var(--background)] pr-12 text-right text-2xl leading-9 text-[$text] placeholder-baseTextMedEmphasis ring-0 transition focus:border-accentBlue focus:ring-0" type="text" onChange = {(e) => setPrice(e.target.value)} value={price} />
+                                <input step="0.01" placeholder="0" className="h-12 rounded-lg border-2 border-solid border-baseBorderLight bg-[var(--background)] pr-12 text-right text-2xl leading-9 text-[$text] placeholder-baseTextMedEmphasis ring-0 transition focus:border-accentBlue focus:ring-0" type="text" onChange={(e) => setPrice(e.target.value)} value={price} />
                                 <div className="flex flex-row absolute right-1 top-1 p-2">
                                     <div className="relative">
                                         <img src="/usdc.webp" className="w-6 h-6" />
@@ -47,7 +60,7 @@ export default function SwapUI({ market }: {market: string}) {
                             Quantity
                         </p>
                         <div className="flex flex-col relative">
-                            <input step="0.01" placeholder="0" className="h-12 rounded-lg border-2 border-solid border-baseBorderLight bg-[var(--background)] pr-12 text-right text-2xl leading-9 text-[$text] placeholder-baseTextMedEmphasis ring-0 transition focus:border-accentBlue focus:ring-0" type="text" onChange = {(e) => setQuantity(e.target.value)} value={quantity}/>
+                            <input step="0.01" placeholder="0" className="h-12 rounded-lg border-2 border-solid border-baseBorderLight bg-[var(--background)] pr-12 text-right text-2xl leading-9 text-[$text] placeholder-baseTextMedEmphasis ring-0 transition focus:border-accentBlue focus:ring-0" type="text" onChange={(e) => setQuantity(e.target.value)} value={quantity} />
                             <div className="flex flex-row absolute right-1 top-1 p-2">
                                 <div className="relative">
                                     <img src="/sol.webp" className="w-6 h-6" />
@@ -72,7 +85,14 @@ export default function SwapUI({ market }: {market: string}) {
                             </div>
                         </div>
                     </div>
-                    <button type="button" className="font-semibold  focus:ring-blue-200 focus:none focus:outline-none text-center h-12 rounded-xl text-base px-4 py-2 my-4 bg-greenPrimaryButtonBackground text-greenPrimaryButtonText active:scale-98" data-rac="">Buy</button>
+                    <button
+                        type="button"
+                        className={`font-semibold focus:ring-blue-200 focus:none focus:outline-none text-center h-12 rounded-xl text-base px-4 py-2 my-4 active:scale-98 ${activeTab === 'buy' ? 'bg-greenPrimaryButtonBackground text-greenPrimaryButtonText' : 'bg-red-500 text-white'}`}
+                        data-rac=""
+                        onClick={placeOrder}
+                    >
+                        {activeTab === 'buy' ? 'BUY' : 'SELL'}
+                    </button>
                     <div className="flex justify-between flex-row mt-1">
                         <div className="flex flex-row gap-2">
                             <div className="flex items-center">
@@ -84,26 +104,26 @@ export default function SwapUI({ market }: {market: string}) {
                                 <label className="ml-2 text-xs">IOC</label>
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 }
 
 function LimitButton({ type, setType }: { type: string, setType: any }) {
     return <div className="flex flex-col cursor-pointer justify-center py-2" onClick={() => setType('limit')}>
-    <div className={`text-sm font-medium py-1 border-b-2 ${type === 'limit' ? "border-accentBlue text-baseTextHighEmphasis" : "border-transparent text-baseTextMedEmphasis hover:border-baseTextHighEmphasis hover:text-baseTextHighEmphasis"}`}>
-        Limit
+        <div className={`text-sm font-medium py-1 border-b-2 ${type === 'limit' ? "border-accentBlue text-baseTextHighEmphasis" : "border-transparent text-baseTextMedEmphasis hover:border-baseTextHighEmphasis hover:text-baseTextHighEmphasis"}`}>
+            Limit
+        </div>
     </div>
-</div>
 }
 
 function MarketButton({ type, setType }: { type: string, setType: any }) {
-    return  <div className="flex flex-col cursor-pointer justify-center py-2" onClick={() => setType('market')}>
-    <div className={`text-sm font-medium py-1 border-b-2 ${type === 'market' ? "border-accentBlue text-baseTextHighEmphasis" : "border-b-2 border-transparent text-baseTextMedEmphasis hover:border-baseTextHighEmphasis hover:text-baseTextHighEmphasis"} `}>
-        Market
-    </div>
+    return <div className="flex flex-col cursor-pointer justify-center py-2" onClick={() => setType('market')}>
+        <div className={`text-sm font-medium py-1 border-b-2 ${type === 'market' ? "border-accentBlue text-baseTextHighEmphasis" : "border-b-2 border-transparent text-baseTextMedEmphasis hover:border-baseTextHighEmphasis hover:text-baseTextHighEmphasis"} `}>
+            Market
+        </div>
     </div>
 }
 
@@ -122,3 +142,4 @@ function SellButton({ activeTab, setActiveTab }: { activeTab: string, setActiveT
         </p>
     </div>
 }
+
