@@ -20,4 +20,8 @@ export class RedisManager{
     public publishChannel(channel : string , message : string){
         this.publisher.publish(channel , message)
     }
+
+    public pushToQueue(message : string){
+        this.publisher.lPush("db_processor",message);
+    }
 }

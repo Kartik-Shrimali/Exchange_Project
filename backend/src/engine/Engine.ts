@@ -92,6 +92,19 @@ export class Engine {
 
                 this.publishDepthUpdates(message.data.market);
 
+                fills.forEach(fill => {
+                    console.log("Pushing trade to db_processor:", fill.fillId);
+                    RedisManager.getInstance().pushToQueue(JSON.stringify({
+                        id: fill.fillId,
+                        market: message.data.market,
+                        price: fill.price,
+                        quantity: fill.quantity,
+                        timestamp: new Date(fill.timestamp),
+                        buyer_id: message.data.side === "buy" ? message.data.userId : fill.otherUserId,
+                        seller_id: message.data.side === "sell" ? message.data.userId : fill.otherUserId
+                    }))
+                })
+
                 break;
             }
             case CANCEL_ORDER: {
@@ -164,8 +177,8 @@ export class Engine {
 
         const depth = orderbook.getDepth();
         RedisManager.getInstance().publishChannel(`depth@${market}`, JSON.stringify({
-            stream : `depth@${market}`,
-            data : depth
+            stream: `depth@${market}`,
+            data: depth
         }));
     }
 }
