@@ -1,9 +1,25 @@
 import express from "express"
+import { client } from "../db";
 
 const klineRouter = express.Router();
 
-klineRouter.get("/" , (req , res) =>{
-    res.status(200).json([]);
+klineRouter.get("/" , async (req , res) =>{
+    const {market , interval , startTime , endTime} = req.query;
+
+    let tablename;
+    switch(interval){
+        case '1m' : tablename = 'klines_1m'; break;
+        default : tablename = "klines_1m"
+
+    }
+
+    const response = await client.query(`
+        SELECT * FROM ${tablename}
+        WHERE market = $1
+        AND bucket >= $2
+        AND bucket <= $3
+        ORDER BY bucket ASC`,[market , new Date(Number(startTime) * 1000) , new Date(Number(endTime) * 1000)])
+    res.status(200).json(response.rows);
 })
 
 export {klineRouter}
