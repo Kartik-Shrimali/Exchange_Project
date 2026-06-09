@@ -10,7 +10,9 @@ export default function TradeView({ market }: { market: string }) {
     const init = async () => {
         let KLineData: KLine[] = [];
         try {
-            KLineData = await getKlines(market, "1h", Math.floor((new Date().getTime() - 1000 * 60 * 60 * 24 * 7) / 1000), Math.floor((new Date().getTime()) / 1000));
+            KLineData = await getKlines(market, "1m", Math.floor((new Date().getTime() - 1000 * 60 * 60 * 24 * 7) / 1000), Math.floor((new Date().getTime()) / 1000));
+
+            console.log("KLine data:", KLineData);
         } catch (e) {
             console.log("Error: ", e);
         }
