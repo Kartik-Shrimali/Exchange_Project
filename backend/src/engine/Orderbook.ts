@@ -186,4 +186,15 @@ export class Orderbook {
 
         return {openBids , openAsks}
     }
+
+    getSnapshot(){
+        return {
+            baseAsset : this.baseAsset,
+            quoteAsset : this.quoteAsset,
+            bids : this.bids,
+            asks : this.asks,
+            lastTradeId : this.lastTradeId,
+            currentPrice : this.currentPrice
+        }
+    }
 }

@@ -3,6 +3,8 @@ import { CANCEL_ORDER, CREATE_ORDER, GET_DEPTH, GET_OPEN_ORDERS, ON_RAMP, type M
 import { Orderbook } from "./Orderbook"
 import { RedisManager } from "./RedisManager";
 
+import fs from "fs";
+
 export const BASE_CURRENCY = "INR";
 
 export class Engine {
@@ -10,14 +12,24 @@ export class Engine {
     private userBalances: Map<string, balanceType>;
 
     constructor() {
-        this.orderbooks = [new Orderbook([], [], "TATA", "INR", 0, 0)];
-        this.userBalances = new Map();
+        try {
+            const snapshot = JSON.parse(fs.readFileSync("./snapshot.json").toString());
+            this.orderbooks = snapshot.orderbooks.map((o: any) => {
+                return new Orderbook(o.bids, o.asks, o.baseAsset, o.quoteAsset, o.lastTradeId, o.currentPrice);
+            });
+            this.userBalances = new Map(snapshot.balances);
+        } catch (e) {
+            this.orderbooks = [new Orderbook([], [], "TATA", "INR", 0, 0)];
+            this.userBalances = new Map();
+            this.userBalances.set("user1", {
+                "INR": { available: 100000, locked: 0 },
+                "TATA": { available: 100000, locked: 0 }
+            });
+        }
 
-        //testing pusposes only
-        this.userBalances.set("user1", {
-            "INR": { available: 100000, locked: 0 },
-            "TATA": { available: 100000, locked: 0 }
-        });
+        setInterval(() => {
+            this.saveSnapshot();
+        }, 1000 * 3)
     }
 
     process(message: MessagefromApi, clientId: string) {
@@ -180,5 +192,13 @@ export class Engine {
             stream: `depth@${market}`,
             data: depth
         }));
+    }
+
+    private saveSnapshot() {
+        const snapshot = {
+            orderbooks: this.orderbooks.map(o => o.getSnapshot()),
+            balances: Array.from(this.userBalances.entries())
+        }
+        fs.writeFileSync('./snapshot.json', JSON.stringify(snapshot));
     }
 }
