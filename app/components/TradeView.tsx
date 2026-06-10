@@ -42,6 +42,8 @@ export default function TradeView({ market }: { market: string }) {
 
     useEffect(()=>{
         init();
+        const interval = setInterval(init , 1000 * 60);
+        return () => clearInterval(interval);
     } , [market , chartRef])
 
     return (

@@ -11,7 +11,8 @@
     "dev:engine": "ts-node src/engine/index.ts",
     "dev:ws": "ts-node src/ws/index.ts",
     "db:seed": "ts-node src/db/seed.ts",
-    "dev:db": "ts-node src/db/index.ts"
+    "dev:db": "ts-node src/db/index.ts",
+    "dev:cron": "ts-node src/db/cron.ts"
   },
   "keywords": [],
   "author": "",

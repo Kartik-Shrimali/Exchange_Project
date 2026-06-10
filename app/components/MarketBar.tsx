@@ -8,15 +8,18 @@ export default function MarketBar({ market }: { market: string }) {
 
     useEffect(() => {
         async function getValue() {
-            try{
+            try {
                 const response = await getTicker(market);
                 setTicker(response);
-            }catch(e){
-                console.log("error in marketbar.tsx. Error: " , e);
+            } catch (e) {
+                console.log("error in marketbar.tsx. Error: ", e);
             }
         }
 
-        getValue();
+        getValue(); // fetch immediately
+        const interval = setInterval(getValue, 5000); // then every 5 seconds
+
+        return () => clearInterval(interval); // cleanup on unmount
     }, [])
 
     return (
