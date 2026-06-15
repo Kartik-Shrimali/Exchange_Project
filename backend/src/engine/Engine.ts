@@ -1,4 +1,4 @@
-import type { balanceType, orderType } from "../types";
+import type { balanceType, fillType, orderType } from "../types";
 import { CANCEL_ORDER, CREATE_ORDER, GET_DEPTH, GET_OPEN_ORDERS, ON_RAMP, type MessagefromApi } from "../types/fromApi";
 import { Orderbook } from "./Orderbook"
 import { RedisManager } from "./RedisManager";
@@ -103,6 +103,7 @@ export class Engine {
                 }))
 
                 this.publishDepthUpdates(message.data.market);
+                this.publishTradeUpdates(message.data.market , fills)
 
                 fills.forEach(fill => {
                     console.log("Pushing trade to db_processor:", fill.fillId);
@@ -192,6 +193,19 @@ export class Engine {
             stream: `depth@${market}`,
             data: depth
         }));
+    }
+
+    private publishTradeUpdates(market : string , fills : fillType[]){
+        fills.forEach(fill => {
+            RedisManager.getInstance().publishChannel(`trade@${market}` , JSON.stringify({
+                stream : `trade@${market}`,
+                data : {
+                    price : fill.price,
+                    quantity : fill.quantity,
+                    timestamp : fill.timestamp
+                }
+            }))
+        })
     }
 
     private saveSnapshot() {

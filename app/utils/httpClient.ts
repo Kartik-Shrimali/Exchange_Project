@@ -8,7 +8,7 @@ export async function getDepth(market : string) : Promise<Depth>{
     return response.data;
 }
 
-export async function getTrades(market : string) : Promise<Trade> {
+export async function getTrades(market : string) : Promise<Trade[]> {
     const response = await axios.get(`${BASE_URL}/trade?symbol=${market}`);
     return response.data;
 }
