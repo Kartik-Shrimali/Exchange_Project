@@ -22,6 +22,7 @@ export default function Depth({ market }: { market: string }) {
 
                 wsClient.subscribe(`depth@${market}`);
                 wsClient.registerCallback(`depth@${market}` , (data : {bids : [string,string][], asks : [string ,string][]}) =>{
+                    console.log(data);
                     setBids(data.bids);
                     setAsks(data.asks);
                     

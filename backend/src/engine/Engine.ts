@@ -25,6 +25,11 @@ export class Engine {
                 "INR": { available: 100000, locked: 0 },
                 "TATA": { available: 100000, locked: 0 }
             });
+
+            this.userBalances.set("mm_bot", {
+                "INR": { available: 10000000, locked: 0 },
+                "TATA": { available: 10000000, locked: 0 }
+            });
         }
 
         setInterval(() => {
@@ -103,7 +108,7 @@ export class Engine {
                 }))
 
                 this.publishDepthUpdates(message.data.market);
-                this.publishTradeUpdates(message.data.market , fills)
+                this.publishTradeUpdates(message.data.market, fills)
 
                 fills.forEach(fill => {
                     console.log("Pushing trade to db_processor:", fill.fillId);
@@ -195,14 +200,14 @@ export class Engine {
         }));
     }
 
-    private publishTradeUpdates(market : string , fills : fillType[]){
+    private publishTradeUpdates(market: string, fills: fillType[]) {
         fills.forEach(fill => {
-            RedisManager.getInstance().publishChannel(`trade@${market}` , JSON.stringify({
-                stream : `trade@${market}`,
-                data : {
-                    price : fill.price,
-                    quantity : fill.quantity,
-                    timestamp : fill.timestamp
+            RedisManager.getInstance().publishChannel(`trade@${market}`, JSON.stringify({
+                stream: `trade@${market}`,
+                data: {
+                    price: fill.price,
+                    quantity: fill.quantity,
+                    timestamp: fill.timestamp
                 }
             }))
         })
