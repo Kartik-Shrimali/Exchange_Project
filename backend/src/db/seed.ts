@@ -12,8 +12,8 @@ async function createTable() {
     await client.connect();
 
     
-    await client.query(`DROP TABLE IF EXISTS trades CASCADE`);
-    await client.query(`CREATE TABLE trades (
+    // await client.query(`DROP TABLE IF EXISTS trades CASCADE`);
+    await client.query(`CREATE TABLE IF NOT EXISTS trades (
     id VARCHAR(50),
     market VARCHAR(50),
     price DECIMAL,
@@ -41,6 +41,12 @@ async function createTable() {
         From trades
         GROUP BY bucket,market
         WITH NO DATA`);
+
+        await client.query(`CREATE TABLE IF NOT EXISTS users(
+            id VARCHAR(50) PRIMARY KEY,
+            name VARCHAR(50),
+            email VARCHAR(50) UNIQUE,
+            password VARCHAR(100))`)
     console.log("TABLES CREATED SUCCESSFULLY!!!")
     await client.end();
 }

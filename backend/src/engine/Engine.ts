@@ -22,8 +22,8 @@ export class Engine {
             this.orderbooks = [new Orderbook([], [], "TATA", "INR", 0, 0)];
             this.userBalances = new Map();
             this.userBalances.set("user1", {
-                "INR": { available: 100000, locked: 0 },
-                "TATA": { available: 100000, locked: 0 }
+                "INR": { available: 10000000, locked: 0 },
+                "TATA": { available: 10000000, locked: 0 }
             });
 
             this.userBalances.set("mm_bot", {
