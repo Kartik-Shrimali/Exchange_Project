@@ -30,6 +30,11 @@ authRouter.post('/login', async (req, res) => {
 
     const response = await client.query(`SELECT id,password from users where email=$1`, [email]);
 
+    if (!response.rows[0]) {
+        res.status(404).json({ msg: "User not found" });
+        return;
+    }
+
     if (await bcrypt.compare(password, response.rows[0]?.password)) {
         const token = jwt.sign({
             userId: response.rows[0]?.id,
@@ -42,7 +47,7 @@ authRouter.post('/login', async (req, res) => {
         })
     } else {
         res.status(404).json({
-            msg : "Invalid email or password"
+            msg: "Invalid email or password"
         })
     }
 

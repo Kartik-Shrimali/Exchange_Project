@@ -1,15 +1,15 @@
-export function PrimaryButton({children}:{children : React.ReactNode}){
+export function PrimaryButton({children, onClick}: {children: React.ReactNode, onClick?: () => void}){
     return (
         <div>
-            <button>{children}</button>
+            <button onClick={onClick}>{children}</button>
         </div>
     )
 }
 
-export function SuccessButton({children} : {children:React.ReactNode}){
+export function SuccessButton({children, onClick}: {children: React.ReactNode, onClick?: () => void}){
     return (
         <div>
-            <button>{children}</button>
+            <button onClick={onClick}>{children}</button>
         </div>
     )
 }
