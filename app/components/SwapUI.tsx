@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getBalance } from "../utils/httpClient";
+import { wsClient } from "../utils/wsClient";
 
 export default function SwapUI({ market }: { market: string }) {
     const [price, setPrice] = useState('');
@@ -14,17 +15,27 @@ export default function SwapUI({ market }: { market: string }) {
     const router = useRouter();
 
     useEffect(() => {
-        async function init() {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                router.push('/login')
-                return;
-            }
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push('/login')
+            return;
+        }
+        const userId = JSON.parse(atob(token.split(".")[1])).userId
+        async function init(token : string) {
             const response = await getBalance(token);
             setBalance(response)
+
+            wsClient.subscribe(`balance@${userId}`);
+            wsClient.registerCallback(`balance@${userId}`, (newBalance: balanceType) => {
+                setBalance(newBalance)
+            })
         }
 
-        init();
+        init(token);
+
+        return () => {
+            wsClient.unsubscribe(`balance@${userId}`)
+        }
     }, [])
 
     async function placeOrder() {

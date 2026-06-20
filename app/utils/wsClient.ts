@@ -11,6 +11,7 @@ export class WsClient{
             const channel = parsedMessage.stream;
             const callback = this.callbacks.get(channel);
             if(callback) callback(parsedMessage.data);
+            console.log(parsedMessage);
         }
         this.callbacks = new Map();
     }

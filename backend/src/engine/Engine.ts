@@ -121,7 +121,15 @@ export class Engine {
                         buyer_id: message.data.side === "buy" ? message.data.userId : fill.otherUserId,
                         seller_id: message.data.side === "sell" ? message.data.userId : fill.otherUserId
                     }))
+                    RedisManager.getInstance().publishChannel(`balance@${fill.otherUserId}`, JSON.stringify({
+                        stream: `balance@${fill.otherUserId}`,
+                        data: this.userBalances.get(fill.otherUserId)
+                    }))
                 })
+                RedisManager.getInstance().publishChannel(`balance@${message.data.userId}`, JSON.stringify({
+                    stream: `balance@${message.data.userId}`,
+                    data: this.userBalances.get(message.data.userId)
+                }))
 
                 break;
             }
@@ -163,6 +171,10 @@ export class Engine {
                         [BASE_CURRENCY]: {
                             available: message.data.amount,
                             locked: 0
+                        },
+                        ["TATA"]: {
+                            available: 0,
+                            locked: 0
                         }
                     })
                 }
@@ -187,13 +199,13 @@ export class Engine {
                 break;
             }
 
-            case GET_BALANCE : {
+            case GET_BALANCE: {
                 const balance = this.userBalances.get(message.data.userId);
-                if(balance){
-                    RedisManager.getInstance().publishChannel(clientId , JSON.stringify(balance));
-                }else{
-                    RedisManager.getInstance().publishChannel(clientId , JSON.stringify({
-                        balance : null,
+                if (balance) {
+                    RedisManager.getInstance().publishChannel(clientId, JSON.stringify(balance));
+                } else {
+                    RedisManager.getInstance().publishChannel(clientId, JSON.stringify({
+                        balance: null,
                     }))
                 }
                 break;
