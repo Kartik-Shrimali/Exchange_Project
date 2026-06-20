@@ -7,6 +7,7 @@ import {tickerRouter} from "./routes/tickers"
 import {tradeRouter} from "./routes/trades"
 import { authRouter } from "./routes/auth"
 import dotenv from "dotenv";
+import { balanceRouter } from "./routes/balance"
 dotenv.config();
 const app = express();
 const PORT = 3001;
@@ -19,7 +20,8 @@ app.use("/api/v1/kline" , klineRouter);
 app.use("/api/v1/depth" , depthRouter);
 app.use("/api/v1/ticker" , tickerRouter);
 app.use("/api/v1/trade" , tradeRouter);
-app.use("/api/v1/auth" , authRouter)
+app.use("/api/v1/auth" , authRouter);
+app.use("/api/v1/balance" , balanceRouter);
 
 app.listen(PORT , () => {
     console.log(`Server running on port ${PORT}`);

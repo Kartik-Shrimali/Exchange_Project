@@ -1,5 +1,6 @@
 import axios from "axios"
 import {Depth , Ticker , Trade , KLine} from "./types"
+import type { balanceType } from "@/backend/src/types";
 
 const BASE_URL = "http://localhost:3001/api/v1";
 
@@ -38,4 +39,13 @@ export async function getKlines(market : string , interval : string, startTime :
 export async function getMarkets() : Promise<any[]> {
     const response = await axios.get(`${BASE_URL}/markets`);
     return response.data;
+}
+
+export async function getBalance(token : string) : Promise<balanceType>{
+    const response = await axios.get(`${BASE_URL}/balance` , {
+        headers : {
+            Authorization : `Bearer ${token}`
+        }
+    })
+    return response.data
 }

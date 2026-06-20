@@ -1,5 +1,5 @@
 import type { balanceType, fillType, orderType } from "../types";
-import { CANCEL_ORDER, CREATE_ORDER, GET_DEPTH, GET_OPEN_ORDERS, ON_RAMP, type MessagefromApi } from "../types/fromApi";
+import { CANCEL_ORDER, CREATE_ORDER, GET_BALANCE, GET_DEPTH, GET_OPEN_ORDERS, ON_RAMP, type MessagefromApi } from "../types/fromApi";
 import { Orderbook } from "./Orderbook"
 import { RedisManager } from "./RedisManager";
 
@@ -186,6 +186,19 @@ export class Engine {
                 RedisManager.getInstance().publishChannel(clientId, JSON.stringify(openOrder));
                 break;
             }
+
+            case GET_BALANCE : {
+                const balance = this.userBalances.get(message.data.userId);
+                if(balance){
+                    RedisManager.getInstance().publishChannel(clientId , JSON.stringify(balance));
+                }else{
+                    RedisManager.getInstance().publishChannel(clientId , JSON.stringify({
+                        balance : null,
+                    }))
+                }
+                break;
+            }
+
         }
     }
 

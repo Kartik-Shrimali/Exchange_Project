@@ -1,19 +1,36 @@
 "use client";
+import type { balanceType } from "@/backend/src/types";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getBalance } from "../utils/httpClient";
 
 export default function SwapUI({ market }: { market: string }) {
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
     const [activeTab, setActiveTab] = useState('buy');
     const [type, setType] = useState('limit');
+    const [balance, setBalance] = useState<balanceType | null>(null)
     const router = useRouter();
+
+    useEffect(() => {
+        async function init() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                router.push('/login')
+                return;
+            }
+            const response = await getBalance(token);
+            setBalance(response)
+        }
+
+        init();
+    }, [])
 
     async function placeOrder() {
         const token = localStorage.getItem("token");
-        
-        if(!token){
+
+        if (!token) {
             router.push('/login')
             return;
         }
@@ -22,9 +39,9 @@ export default function SwapUI({ market }: { market: string }) {
             price: Number(price),
             quantity: Number(quantity),
             side: activeTab,
-        } , {
-            headers : {
-                Authorization : `Bearer ${token}`
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
             }
         })
 
@@ -49,7 +66,9 @@ export default function SwapUI({ market }: { market: string }) {
                         <div className="flex flex-col gap-3">
                             <div className="flex items-center justify-between flex-row">
                                 <p className="text-xs font-normal text-baseTextMedEmphasis">Available Balance</p>
-                                <p className="font-medium text-xs text-baseTextHighEmphasis">36.94 USDC</p>
+                                <p className="font-medium text-xs text-baseTextHighEmphasis">
+                                    {activeTab === "buy" ? balance?.INR?.available ?? 0 : balance?.TATA?.available ?? 0}
+                                </p>
                             </div>
                         </div>
                         <div className="flex flex-col gap-2">
