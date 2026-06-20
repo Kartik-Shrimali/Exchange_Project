@@ -32,6 +32,7 @@ export default function Appbar() {
                     <div className="p-2 mr-2">
                         {isLoggedIn ? <button onClick={() => {
                           localStorage.removeItem("token");
+                          setLogin(false)
                           router.push('/register')  
                         }}>LOGOUT</button> : <div><SuccessButton onClick={() => {
                             router.push('/login')
