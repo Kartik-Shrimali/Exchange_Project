@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SwapUI({ market }: { market: string }) {
@@ -7,14 +8,24 @@ export default function SwapUI({ market }: { market: string }) {
     const [quantity, setQuantity] = useState('');
     const [activeTab, setActiveTab] = useState('buy');
     const [type, setType] = useState('limit');
+    const router = useRouter();
 
     async function placeOrder() {
+        const token = localStorage.getItem("token");
+        
+        if(!token){
+            router.push('/login')
+            return;
+        }
         const response = await axios.post("http://localhost:3001/api/v1/order", {
             market: market,
             price: Number(price),
             quantity: Number(quantity),
             side: activeTab,
-            userId: "user1"
+        } , {
+            headers : {
+                Authorization : `Bearer ${token}`
+            }
         })
 
         console.log(`Order placed: `, response.data)

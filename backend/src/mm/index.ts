@@ -6,6 +6,10 @@ const TOTAL_BIDS = 15;
 const TOTAL_ASKS = 15;
 const MARKET = "TATA_INR";
 const USER_ID = "mm_bot"
+const MM_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJtbV9ib3QiLCJpYXQiOjE3ODE4OTMxMjcsImV4cCI6NDkzNzY1MzEyN30.oQvWqe-BAwkJi7P0VgeKajfqoEcYKNh8AbuZtA0DXEs"
+
+axios.defaults.headers.common['Authorization'] = `Bearer ${MM_TOKEN}`
+
 async function main() {
     while (true) {
         const response = await axios.get(`${BASE_URL}/ticker`)

@@ -2,8 +2,10 @@ import express from "express";
 import bcrypt from 'bcrypt'
 import { client } from "../db";
 import jwt from "jsonwebtoken";
+import { RedisManager } from "../RedisManager";
+import { ON_RAMP } from "../../types/fromApi";
 
-const JWT_SECRET = "example"
+export const JWT_SECRET = process.env.JWT_SECRET || "example"
 const authRouter = express.Router();
 
 authRouter.post('/register', async (req, res) => {
@@ -17,7 +19,12 @@ authRouter.post('/register', async (req, res) => {
         userId,
         email
     }, JWT_SECRET, { expiresIn: '1d' })
-
+    
+    await RedisManager.getInstance().sendAndAwait({type :ON_RAMP , data : {
+        userId ,
+        amount : 100000,
+        txnId : Math.random().toString().substring(2 , 15)
+    }})
     res.status(200).send({
         userId,
         token

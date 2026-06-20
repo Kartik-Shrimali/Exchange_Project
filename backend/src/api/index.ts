@@ -6,7 +6,8 @@ import {depthRouter} from "./routes/depth"
 import {tickerRouter} from "./routes/tickers"
 import {tradeRouter} from "./routes/trades"
 import { authRouter } from "./routes/auth"
-
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 const PORT = 3001;
 

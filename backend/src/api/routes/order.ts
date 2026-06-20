@@ -1,11 +1,20 @@
 import express from "express"
 import { RedisManager } from "../RedisManager";
 import { CANCEL_ORDER, CREATE_ORDER, GET_OPEN_ORDERS } from "../../types/fromApi";
+import { authMiddleware } from "../middleware";
 
 const orderRouter = express.Router();
 
+orderRouter.use(authMiddleware);
+
 orderRouter.post("/", async (req, res) => {
-    const { market, price, quantity, side, userId } = req.body;
+    const { market, price, quantity, side } = req.body;
+    const userId = req.userId;
+
+    if (!userId) {
+        res.status(401).json({ msg: "Unauthorized" });
+        return;
+    }
 
     const redisInstance = RedisManager.getInstance()
 
@@ -18,7 +27,13 @@ orderRouter.post("/", async (req, res) => {
 })
 
 orderRouter.delete("/", async (req, res) => {
-    const { orderId, market, userId } = req.body;
+    const { orderId, market, } = req.body;
+    const userId = req.userId
+
+    if (!userId) {
+        res.status(401).json({ msg: "Unauthorized" });
+        return;
+    }
 
     const redisInstance = RedisManager.getInstance();
 
@@ -31,7 +46,12 @@ orderRouter.delete("/", async (req, res) => {
     res.status(200).json(response);
 })
 orderRouter.get("/open", async (req, res) => {
-    const userId = req.query.userId as string;
+    const userId = req.userId;
+    if (!userId) {
+        res.status(401).json({ msg: "Unauthorized" });
+        return;
+    }
+
     const market = req.query.market as string;
 
     const redisInstance = RedisManager.getInstance();
