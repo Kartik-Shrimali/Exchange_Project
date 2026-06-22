@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChartManager } from "../utils/chartManager";
 import type { KLine } from "../utils/types";
 import { getKlines } from "../utils/httpClient";
@@ -6,13 +6,12 @@ import { getKlines } from "../utils/httpClient";
 export default function TradeView({ market }: { market: string }) {
     const chartRef = useRef<HTMLDivElement>(null);
     const chartManagerRef = useRef<ChartManager>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const init = async () => {
         let KLineData: KLine[] = [];
         try {
             KLineData = await getKlines(market, "1m", Math.floor((new Date().getTime() - 1000 * 60 * 60 * 24 * 7) / 1000), Math.floor((new Date().getTime()) / 1000));
-
-            console.log("KLine data:", KLineData);
         } catch (e) {
             console.log("Error: ", e);
         }
@@ -38,15 +37,26 @@ export default function TradeView({ market }: { market: string }) {
             );
             chartManagerRef.current = chartManager;
         }
+        setIsLoading(false);
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         init();
-        const interval = setInterval(init , 1000 * 60);
+        const interval = setInterval(init, 1000 * 60);
         return () => clearInterval(interval);
-    } , [market , chartRef])
+    }, [market, chartRef])
 
     return (
-        <div ref={chartRef} style={{ height: "520px", width: "100%", marginTop: 4 }}></div>
+        <div style={{ height: "520px", width: "100%", marginTop: 4, position: "relative" }}>
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-[#0e0f14]">
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-8 h-8 border-2 border-slate-600 border-t-green-500 rounded-full animate-spin"></div>
+                        <p className="text-slate-400 text-xs">Loading chart...</p>
+                    </div>
+                </div>
+            )}
+            <div ref={chartRef} style={{ height: "100%", width: "100%" }}></div>
+        </div>
     )
 }
