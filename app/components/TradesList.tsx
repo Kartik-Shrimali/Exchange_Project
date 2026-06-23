@@ -17,40 +17,34 @@ export default function TradesList({ market }: { market: string }) {
 
                 wsClient.subscribe(`trade@${market}`);
                 wsClient.registerCallback(`trade@${market}`, (trade: Trade) => {
-                    setTrades(prev => [trade, ...prev]);
+                    setTrades(prev => [trade, ...prev].slice(0, 50));
                 })
             } catch (e) {
                 console.log("error in tradesList.tsx.Error : ", e);
             }
-
         }
         init();
         return () => {
             wsClient.unsubscribe(`trade@${market}`);
         }
-
-
     }, [])
+
     return (
-        <div>
-            <div className="flex text-xs justify-between">
-                <div>
-                    PRICE
-                </div>
-                <div>
-                    AMOUNT
-                </div>
-                <div>
-                    TIME
-                </div>
+        <div className="flex flex-col">
+            <div className="flex justify-between text-xs text-slate-400 px-2 py-1 border-t border-slate-800">
+                <span>PRICE</span>
+                <span>AMOUNT</span>
+                <span>TIME</span>
             </div>
-            {trades.map((trade, i) => (
-                <div className="text-xs text-white flex justify-between" key={i}>
-                    <div>{trade.price} </div>
-                    <div> {trade.quantity}</div>
-                    <div>{new Date(trade.timestamp).toLocaleTimeString()}</div>
-                </div>
-            ))}
+            <div className="overflow-y-auto max-h-[200px]">
+                {trades.map((trade, i) => (
+                    <div className="flex justify-between text-xs px-2 py-[2px] hover:bg-slate-800" key={i}>
+                        <span className="text-slate-200">{Number(trade.price).toFixed(1)}</span>
+                        <span className="text-slate-300">{trade.quantity}</span>
+                        <span className="text-slate-400">{new Date(trade.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }

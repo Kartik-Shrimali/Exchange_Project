@@ -17,14 +17,15 @@ export default function Trade() {
                         <TradeView market={params.market as string} />
                     </div>
                     <div className="w-[1px] flex-col border-slate-800 border-l"></div>
-                    <div className="flex flex-col w-[250px] overflow-hidden">
-                        <Depth market={params.market as string} />
-                        <div>
+                    <div className="flex flex-col w-[250px] overflow-hidden h-full">
+                        <div className="flex-1 overflow-hidden">
+                            <Depth market={params.market as string} />
+                        </div>
+                        <div className="border-t border-slate-800">
                             <TradesList market={params.market as string} />
                         </div>
                     </div>
                 </div>
-
             </div>
             <div className="w-[1px] flex-col border-slate-800 border-l"></div>
             <div>
