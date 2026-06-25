@@ -19,17 +19,28 @@ export class Engine {
             });
             this.userBalances = new Map(snapshot.balances);
         } catch (e) {
-            this.orderbooks = [new Orderbook([], [], "TATA", "INR", 0, 0)];
+            this.orderbooks = [
+                new Orderbook([], [], "BTC", "INR", 0, 0),
+                new Orderbook([], [], "ETH", "INR", 0, 0),
+                new Orderbook([], [], "SOL", "INR", 0, 0)
+            ];
             this.userBalances = new Map();
-            this.userBalances.set("user1", {
-                "INR": { available: 10000000, locked: 0 },
-                "TATA": { available: 10000000, locked: 0 }
-            });
 
-            this.userBalances.set("mm_bot", {
-                "INR": { available: 10000000, locked: 0 },
-                "TATA": { available: 10000000, locked: 0 }
-            });
+            const balanceObj : balanceType = {
+                [BASE_CURRENCY] : {
+                    available : 10000000000,
+                    locked : 0
+                }
+            }
+
+            this.orderbooks.forEach(orderbook => {
+                balanceObj[orderbook.ticker().split("_")[0]] = {
+                    available : 10000000000,
+                    locked : 0
+                }
+            })
+
+            this.userBalances.set("mm_bot", balanceObj);
         }
 
         setInterval(() => {
@@ -167,16 +178,19 @@ export class Engine {
                 if (balance) {
                     balance[BASE_CURRENCY].available += message.data.amount
                 } else {
-                    this.userBalances.set(message.data.userId, {
+                    const balanceObj: balanceType = {
                         [BASE_CURRENCY]: {
                             available: message.data.amount,
                             locked: 0
-                        },
-                        ["TATA"]: {
+                        }
+                    }
+                    this.orderbooks.forEach(orderbook => {
+                        balanceObj[orderbook.ticker().split("_")[0]] = {
                             available: 0,
                             locked: 0
                         }
                     })
+                    this.userBalances.set(message.data.userId, balanceObj)
                 }
                 RedisManager.getInstance().publishChannel(clientId, JSON.stringify({ success: true }))
                 break;

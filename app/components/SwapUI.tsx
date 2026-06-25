@@ -14,6 +14,8 @@ export default function SwapUI({ market }: { market: string }) {
     const [balance, setBalance] = useState<balanceType | null>(null)
     const router = useRouter();
 
+    const baseAsset = market.split("_")[0];
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -69,7 +71,7 @@ export default function SwapUI({ market }: { market: string }) {
                     <div className="flex items-center justify-between">
                         <p className="text-xs text-baseTextMedEmphasis">Available Balance</p>
                         <p className="text-xs font-medium text-baseTextHighEmphasis">
-                            {activeTab === "buy" ? balance?.INR?.available ?? 0 : balance?.TATA?.available ?? 0}
+                            {activeTab === "buy" ? balance?.INR?.available ?? 0 : balance?.[baseAsset]?.available ?? 0}
                         </p>
                     </div>
 

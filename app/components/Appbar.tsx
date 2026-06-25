@@ -31,7 +31,7 @@ export default function Appbar() {
                     </div>
                     <div
                         className={`text-sm cursor-pointer transition hover:text-white ${pathname.startsWith('/trade') ? 'text-white font-medium' : 'text-slate-400'}`}
-                        onClick={() => router.push('/trade/TATA_INR')}
+                        onClick={() => router.push('/trade/BTC_INR')}
                     >
                         Trade
                     </div>

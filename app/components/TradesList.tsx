@@ -27,7 +27,7 @@ export default function TradesList({ market }: { market: string }) {
         return () => {
             wsClient.unsubscribe(`trade@${market}`);
         }
-    }, [])
+    }, [market])
 
     return (
         <div className="flex flex-col">

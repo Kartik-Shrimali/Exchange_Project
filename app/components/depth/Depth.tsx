@@ -14,7 +14,7 @@ export default function Depth({ market }: { market: string }) {
     useEffect(() => {
         async function init() {
             try {
-                
+                console.log("depth useeffect ran")
                 getDepth(market).then(d => {
                     setBids(d.bids.reverse());
                     setAsks(d.asks);
@@ -36,7 +36,7 @@ export default function Depth({ market }: { market: string }) {
         return () =>{
             wsClient.unsubscribe(`depth@${market}`)
         }
-    }, [])
+    }, [market])
 
     return (
         <div>

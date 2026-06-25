@@ -11,7 +11,7 @@ export default function Home() {
         <div className="flex gap-4 mt-4">
           <button 
             className="bg-greenPrimaryButtonBackground text-black font-semibold px-8 py-3 rounded-xl hover:opacity-90"
-            onClick={() => router.push("/trade/TATA_INR")}
+            onClick={() => router.push("/trade/BTC_INR")}
           >
             Start Trading
           </button>
