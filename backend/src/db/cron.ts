@@ -8,9 +8,13 @@ const client = new Client({
     password : "password"
 })
 
+const views = ['klines_1m', 'klines_5m', 'klines_15m', 'klines_30m', 'klines_1h', 'klines_4h', 'klines_1d', 'klines_1w'];
+
 async function refreshViews(){
-    await client.query(`CALL refresh_continuous_aggregate('klines_1m' , NULL , NULL)`);
-    console.log("Klines Refreshed");
+    for(const view of views){
+        await client.query(`CALL refresh_continuous_aggregate('${view}' , NULL , NULL)`);
+        console.log(`${view} refreshed`);
+    }
 }
 
 async function main(){

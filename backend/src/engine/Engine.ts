@@ -119,7 +119,7 @@ export class Engine {
                 }))
 
                 this.publishDepthUpdates(message.data.market);
-                this.publishTradeUpdates(message.data.market, fills)
+                this.publishTradeUpdates(message.data.market, fills , (message.data.side === "sell"))
 
                 fills.forEach(fill => {
                     console.log("Pushing trade to db_processor:", fill.fillId);
@@ -130,7 +130,8 @@ export class Engine {
                         quantity: fill.quantity,
                         timestamp: new Date(fill.timestamp),
                         buyer_id: message.data.side === "buy" ? message.data.userId : fill.otherUserId,
-                        seller_id: message.data.side === "sell" ? message.data.userId : fill.otherUserId
+                        seller_id: message.data.side === "sell" ? message.data.userId : fill.otherUserId,
+                        is_buyer_maker : message.data.side === "sell"
                     }))
                     RedisManager.getInstance().publishChannel(`balance@${fill.otherUserId}`, JSON.stringify({
                         stream: `balance@${fill.otherUserId}`,
@@ -239,14 +240,15 @@ export class Engine {
         }));
     }
 
-    private publishTradeUpdates(market: string, fills: fillType[]) {
+    private publishTradeUpdates(market: string, fills: fillType[] , isBuyerMaker : boolean) {
         fills.forEach(fill => {
             RedisManager.getInstance().publishChannel(`trade@${market}`, JSON.stringify({
                 stream: `trade@${market}`,
                 data: {
                     price: fill.price,
                     quantity: fill.quantity,
-                    timestamp: fill.timestamp
+                    timestamp: fill.timestamp,
+                    isBuyerMaker : isBuyerMaker
                 }
             }))
         })

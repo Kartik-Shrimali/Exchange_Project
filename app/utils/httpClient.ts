@@ -1,50 +1,52 @@
 import axios from "axios"
-import {Depth , Ticker , Trade , KLine} from "./types"
+import { Depth, Ticker, Trade, KLine } from "./types"
 import type { balanceType } from "@/backend/src/types";
 
 const BASE_URL = "http://localhost:3001/api/v1";
 
-export async function getDepth(market : string) : Promise<Depth>{
+export async function getDepth(market: string): Promise<Depth> {
     const response = await axios.get(`${BASE_URL}/depth?symbol=${market}`);
     return response.data;
 }
 
-export async function getTrades(market : string) : Promise<Trade[]> {
+export async function getTrades(market: string): Promise<Trade[]> {
     const response = await axios.get(`${BASE_URL}/trade?market=${market}`);
-    return response.data;
+    return response.data.map((t: any) => ({
+        ...t,
+        isBuyerMaker: t.is_buyer_maker
+    }));
 }
-
-export async function getTickers() : Promise<Ticker[]> {
+export async function getTickers(): Promise<Ticker[]> {
     const response = await axios.get(`${BASE_URL}/ticker`);
     return response.data;
 }
 
-export async function getTicker(market : string) : Promise<Ticker>{
+export async function getTicker(market: string): Promise<Ticker> {
     const tickers = await getTickers();
     const ticker = tickers.find(t => t.symbol === market);
-    if(!ticker){
+    if (!ticker) {
         throw new Error(`No ticker found for ${market}`)
     }
     return ticker;
 }
 
-export async function getKlines(market : string , interval : string, startTime : number , endTime : number) : Promise<KLine[]>{
+export async function getKlines(market: string, interval: string, startTime: number, endTime: number): Promise<KLine[]> {
     const response = await axios.get(`${BASE_URL}/kline?market=${market}&interval=${interval}&startTime=${startTime}&endTime=${endTime}`);
 
-    const data : KLine[] = response.data;
+    const data: KLine[] = response.data;
 
-    return data.sort((x , y)=>(Number(x.end) < Number(y.end) ? -1 : 1));
+    return data.sort((x, y) => (Number(x.end) < Number(y.end) ? -1 : 1));
 }
 
-export async function getMarkets() : Promise<any[]> {
+export async function getMarkets(): Promise<any[]> {
     const response = await axios.get(`${BASE_URL}/markets`);
     return response.data;
 }
 
-export async function getBalance(token : string) : Promise<balanceType>{
-    const response = await axios.get(`${BASE_URL}/balance` , {
-        headers : {
-            Authorization : `Bearer ${token}`
+export async function getBalance(token: string): Promise<balanceType> {
+    const response = await axios.get(`${BASE_URL}/balance`, {
+        headers: {
+            Authorization: `Bearer ${token}`
         }
     })
     return response.data

@@ -39,7 +39,9 @@ export default function TradesList({ market }: { market: string }) {
             <div className="overflow-y-auto max-h-[200px]">
                 {trades.map((trade, i) => (
                     <div className="flex justify-between text-xs px-2 py-[2px] hover:bg-slate-800" key={i}>
-                        <span className="text-slate-200">{Number(trade.price).toFixed(1)}</span>
+                        <span className={`${trade.isBuyerMaker ? "text-green-400" : "text-red-400"}`}>
+                            {Number(trade.price).toFixed(1)}
+                        </span>
                         <span className="text-slate-300">{trade.quantity}</span>
                         <span className="text-slate-400">{new Date(trade.timestamp).toLocaleTimeString()}</span>
                     </div>

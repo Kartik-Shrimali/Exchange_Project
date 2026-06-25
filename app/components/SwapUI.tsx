@@ -115,8 +115,23 @@ export default function SwapUI({ market }: { market: string }) {
                     </div>
 
                     <div className="flex justify-center gap-2 mt-1">
-                        {["25%", "50%", "75%", "Max"].map((label) => (
-                            <div key={label} className="flex items-center justify-center rounded-full px-3 py-1 text-xs cursor-pointer bg-baseBackgroundL2 hover:bg-baseBackgroundL3 text-baseTextMedEmphasis">
+                        {[["25%", 0.25], ["50%", 0.50], ["75%", 0.75], ["Max", 1]].map(([label, fraction]) => (
+                            <div
+                                key={label}
+                                className="flex items-center justify-center rounded-full px-3 py-1 text-xs cursor-pointer bg-baseBackgroundL2 hover:bg-baseBackgroundL3 text-baseTextMedEmphasis"
+                                onClick={() => {
+                                    if (activeTab === "sell") {
+                                        const baseAsset = market.split("_")[0];
+                                        const available = balance?.[baseAsset]?.available ?? 0;
+                                        setQuantity((available * (fraction as number)).toFixed(2));
+                                    } else {
+                                        const available = balance?.INR?.available ?? 0;
+                                        const priceNum = parseFloat(price);
+                                        if (!priceNum) return;
+                                        setQuantity(((available * (fraction as number)) / priceNum).toFixed(2));
+                                    }
+                                }}
+                            >
                                 {label}
                             </div>
                         ))}
