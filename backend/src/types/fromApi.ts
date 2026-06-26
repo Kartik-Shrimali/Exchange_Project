@@ -9,10 +9,11 @@ export type MessagefromApi = {
     type : typeof CREATE_ORDER
     data : {
         market : string,
-        price : number,
+        price ?: number,
         userId : string,
         side : "buy" | "sell",
-        quantity : number
+        quantity : number,
+        isMarketOrder : boolean
     }
 } | {
     type : typeof CANCEL_ORDER

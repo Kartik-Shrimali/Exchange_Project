@@ -45,9 +45,10 @@ export default function SwapUI({ market }: { market: string }) {
         }
         const response = await axios.post("http://localhost:3001/api/v1/order", {
             market: market,
-            price: Number(price),
+            price: type === "limit" ? Number(price) : undefined,
             quantity: Number(quantity),
             side: activeTab,
+            isMarketOrder: type === "market"
         }, {
             headers: { Authorization: `Bearer ${token}` }
         })
@@ -75,22 +76,28 @@ export default function SwapUI({ market }: { market: string }) {
                         </p>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <p className="text-xs text-baseTextMedEmphasis">Price</p>
-                        <div className="relative">
-                            <input
-                                step="0.01"
-                                placeholder="0"
-                                className="h-12 w-full rounded-lg border border-slate-700 bg-[#0e0f14] pr-12 text-right text-xl text-white placeholder-slate-600 focus:outline-none focus:border-slate-500 transition"
-                                type="text"
-                                onChange={(e) => setPrice(e.target.value)}
-                                value={price}
-                            />
-                            <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                                <img src="/usdc.webp" className="w-6 h-6 rounded-full" />
+                    {type === "limit" && (
+                        <div className="flex flex-col gap-2">
+                            <p className="text-xs font-normal text-baseTextMedEmphasis">
+                                Price
+                            </p>
+                            <div className="flex flex-col relative">
+                                <input
+                                    step="0.01"
+                                    placeholder="0"
+                                    className="h-12 rounded-lg border-2 border-solid border-baseBorderLight bg-[var(--background)] pr-12 text-right text-2xl leading-9 text-[$text] placeholder-baseTextMedEmphasis ring-0 transition focus:border-accentBlue focus:ring-0"
+                                    type="text"
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    value={price}
+                                />
+                                <div className="flex flex-row absolute right-1 top-1 p-2">
+                                    <div className="relative">
+                                        <img src="/usdc.webp" className="w-6 h-6" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="flex flex-col gap-1">
                         <p className="text-xs text-baseTextMedEmphasis">Quantity</p>

@@ -8,7 +8,7 @@ const orderRouter = express.Router();
 orderRouter.use(authMiddleware);
 
 orderRouter.post("/", async (req, res) => {
-    const { market, price, quantity, side } = req.body;
+    const { market, price, quantity, side ,isMarketOrder } = req.body;
     const userId = req.userId;
 
     if (!userId) {
@@ -20,7 +20,7 @@ orderRouter.post("/", async (req, res) => {
 
     const response = await redisInstance.sendAndAwait({
         type: CREATE_ORDER,
-        data: { market, price, quantity, side, userId }
+        data: { market, price, quantity, side, userId , isMarketOrder  }
     })
     console.log("Order response post /:", response)
     res.status(200).json(response)

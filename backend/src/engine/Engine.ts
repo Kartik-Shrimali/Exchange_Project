@@ -26,17 +26,17 @@ export class Engine {
             ];
             this.userBalances = new Map();
 
-            const balanceObj : balanceType = {
-                [BASE_CURRENCY] : {
-                    available : 10000000000,
-                    locked : 0
+            const balanceObj: balanceType = {
+                [BASE_CURRENCY]: {
+                    available: 10000000000,
+                    locked: 0
                 }
             }
 
             this.orderbooks.forEach(orderbook => {
                 balanceObj[orderbook.ticker().split("_")[0]] = {
-                    available : 10000000000,
-                    locked : 0
+                    available: 10000000000,
+                    locked: 0
                 }
             })
 
@@ -63,13 +63,17 @@ export class Engine {
                 const quoteBalance = userBalance[quoteAsset];
                 if (!quoteBalance) throw new Error("Asset not found")
 
+                const price = message.data.isMarketOrder
+                    ? (message.data.side === "buy" ? Infinity : 0)
+                    : message.data.price!;
+
                 if (message.data.side == "buy") {
-                    if (!(quoteBalance.available >= message.data.quantity * message.data.price)) throw new Error("Insufficient balance ")
-
-                    quoteBalance.available -= message.data.price * message.data.quantity
-                    quoteBalance.locked += message.data.price * message.data.quantity
-
-                } else {
+                    if (!message.data.isMarketOrder) {
+                        if (!(quoteBalance.available >= message.data.quantity * price)) throw new Error("Insufficient balance ")
+                        quoteBalance.available -= price * message.data.quantity
+                        quoteBalance.locked += price * message.data.quantity
+                    }
+                }else {
                     if (!(userBalance[baseAsset].available >= message.data.quantity)) throw new Error("Insufficient balance")
 
                     userBalance[baseAsset].available -= message.data.quantity
@@ -79,7 +83,7 @@ export class Engine {
                 const order: orderType = {
                     orderId: Math.random().toString(36).substring(2, 15),
                     userId: message.data.userId,
-                    price: message.data.price,
+                    price: price,
                     market: message.data.market,
                     quantity: message.data.quantity,
                     side: message.data.side,
@@ -119,7 +123,7 @@ export class Engine {
                 }))
 
                 this.publishDepthUpdates(message.data.market);
-                this.publishTradeUpdates(message.data.market, fills , (message.data.side === "sell"))
+                this.publishTradeUpdates(message.data.market, fills, (message.data.side === "sell"))
 
                 fills.forEach(fill => {
                     console.log("Pushing trade to db_processor:", fill.fillId);
@@ -131,7 +135,7 @@ export class Engine {
                         timestamp: new Date(fill.timestamp),
                         buyer_id: message.data.side === "buy" ? message.data.userId : fill.otherUserId,
                         seller_id: message.data.side === "sell" ? message.data.userId : fill.otherUserId,
-                        is_buyer_maker : message.data.side === "sell"
+                        is_buyer_maker: message.data.side === "sell"
                     }))
                     RedisManager.getInstance().publishChannel(`balance@${fill.otherUserId}`, JSON.stringify({
                         stream: `balance@${fill.otherUserId}`,
@@ -240,7 +244,7 @@ export class Engine {
         }));
     }
 
-    private publishTradeUpdates(market: string, fills: fillType[] , isBuyerMaker : boolean) {
+    private publishTradeUpdates(market: string, fills: fillType[], isBuyerMaker: boolean) {
         fills.forEach(fill => {
             RedisManager.getInstance().publishChannel(`trade@${market}`, JSON.stringify({
                 stream: `trade@${market}`,
@@ -248,7 +252,7 @@ export class Engine {
                     price: fill.price,
                     quantity: fill.quantity,
                     timestamp: fill.timestamp,
-                    isBuyerMaker : isBuyerMaker
+                    isBuyerMaker: isBuyerMaker
                 }
             }))
         })
