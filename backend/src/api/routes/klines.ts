@@ -14,10 +14,16 @@ klineRouter.get("/" , async (req , res) =>{
 
     let tablename;
     switch(interval){
-        case '1m' : tablename = 'klines_1m'; break;
-        default : tablename = "klines_1m"
-
-    }
+    case '1m':  tablename = 'klines_1m';  break;
+    case '5m':  tablename = 'klines_5m';  break;
+    case '15m': tablename = 'klines_15m'; break;
+    case '30m': tablename = 'klines_30m'; break;
+    case '1h':  tablename = 'klines_1h';  break;
+    case '4h':  tablename = 'klines_4h';  break;
+    case '1d':  tablename = 'klines_1d';  break;
+    case '1w':  tablename = 'klines_1w';  break;
+    default:    tablename = 'klines_1m';
+}
 
     const response = await client.query(`
         SELECT * FROM ${tablename}
