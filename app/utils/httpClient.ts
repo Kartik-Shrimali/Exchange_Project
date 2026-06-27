@@ -51,3 +51,15 @@ export async function getBalance(token: string): Promise<balanceType> {
     })
     return response.data
 }
+
+export async function getOrderHistory(market: string, token: string): Promise<Trade[]> {
+    const response = await axios.get(`${BASE_URL}/trade/history?market=${market}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return response.data.map((t: any) => ({
+        ...t,
+        isBuyerMaker: t.is_buyer_maker
+    }));
+}

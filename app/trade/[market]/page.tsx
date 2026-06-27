@@ -1,6 +1,7 @@
 "use client"
 import Depth from "@/app/components/depth/Depth";
 import MarketBar from "@/app/components/MarketBar";
+import OrderHistory from "@/app/components/OrderHistory";
 import SwapUI from "@/app/components/SwapUI";
 import TradesList from "@/app/components/TradesList";
 import TradeView from "@/app/components/TradeView";
@@ -26,6 +27,7 @@ export default function Trade() {
                         </div>
                     </div>
                 </div>
+                <OrderHistory market={params.market as string} />
             </div>
             <div className="w-[1px] flex-col border-slate-800 border-l"></div>
             <div>
